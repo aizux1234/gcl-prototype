@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>สมัครสำเร็จ — ระบบน้ำบาดาล GCL</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1B3A6B;--navy-dark:#0F2447;--navy-mid:#2C5AA0;--navy-lt:#E8EEF7;--navy-xlt:#F4F7FC;
+  --gold:#B8860B;--gold-bright:#D4A017;--gold-lt:#FBF4E0;
+  --teal:#0A5C47;--teal-mid:#0F7A5E;--teal-lt:#E2F4EE;
+  --ok:#166534;--ok-lt:#DCFCE7;--ok-mid:#16A34A;
+  --warn:#92400E;--warn-lt:#FEF3C7;--warn-mid:#D97706;
+  --err:#991B1B;--err-lt:#FEE2E2;--err-mid:#DC2626;
+  --surface:#F0F2F7;--border:rgba(27,58,107,0.10);--border-mid:rgba(27,58,107,0.18);
+  --text:#0F172A;--text-2:#374151;--text-3:#94A3B8;--white:#fff;
+  --shadow-sm:0 1px 3px rgba(15,20,40,.06);
+  --shadow-md:0 4px 16px rgba(15,36,71,.08),0 1px 4px rgba(15,36,71,.04);
+  --shadow-lg:0 12px 40px rgba(15,36,71,.13),0 4px 12px rgba(15,36,71,.06);
+  --radius:12px;--radius-lg:18px;
+}
+html,body{
+  font-family:'Public Sans',sans-serif;
+  height:100%;overflow:hidden;
+  color:var(--text);
+  background:var(--surface)
+}
+
+/* ── FULL PAGE ── */
+.success-page{
+  width:100vw;height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden
+}
+
+/* ── BACKGROUND PARTICLES ── */
+.bg-canvas{
+  position:absolute;inset:0;pointer-events:none;z-index:0
+}
+
+/* ── SOFT BACKGROUND GLOW ── */
+.success-page::before{
+  content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 60% 50% at 30% 30%, rgba(44,90,160,.06), transparent),
+    radial-gradient(ellipse 50% 60% at 75% 70%, rgba(22,163,74,.04), transparent);
+  pointer-events:none;z-index:0
+}
+
+/* ── CARD ── */
+.success-card{
+  background:#fff;border-radius:28px;
+  padding:56px 64px;
+  max-width:520px;width:90%;
+  box-shadow:var(--shadow-lg);
+  border:1px solid rgba(255,255,255,.8);
+  position:relative;z-index:1;
+  text-align:center;
+  animation:cardIn .6s cubic-bezier(.34,1.56,.64,1) both
+}
+@keyframes cardIn{
+  from{opacity:0;transform:translateY(32px) scale(.96)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+
+/* ── CHECK MARK ── */
+.success-check-wrap{
+  width:96px;height:96px;border-radius:50%;
+  background:linear-gradient(135deg,#22C55E,#16A34A);
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 28px;
+  box-shadow:0 0 0 12px var(--ok-lt),0 8px 32px rgba(22,163,74,.3);
+  animation:popIn .7s .2s cubic-bezier(.34,1.56,.64,1) both
+}
+@keyframes popIn{
+  from{opacity:0;transform:scale(.3) rotate(-20deg)}
+  to{opacity:1;transform:scale(1) rotate(0)}
+}
+.success-check-mark{
+  font-size:48px;line-height:1;color:#fff;
+  animation:checkDraw .4s .8s ease both
+}
+@keyframes checkDraw{
+  from{opacity:0;transform:scale(.5)}
+  to{opacity:1;transform:scale(1)}
+}
+
+/* ── BRAND PILL ── */
+.success-brand-pill{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--navy-lt);border-radius:20px;
+  padding:5px 14px;margin-bottom:20px;
+  animation:fadeUp .5s .35s ease both
+}
+.success-brand-pill-icon{font-size:16px}
+.success-brand-pill-text{font-size:12px;font-weight:700;color:var(--navy-mid);letter-spacing:.04em}
+
+/* ── TEXT ── */
+.success-title{
+  font-size:30px;font-weight:900;color:var(--navy);
+  letter-spacing:-.5px;margin-bottom:12px;line-height:1.2;
+  animation:fadeUp .5s .4s ease both
+}
+.success-sub{
+  font-size:14px;color:var(--text-3);line-height:1.7;
+  max-width:360px;margin:0 auto 32px;
+  animation:fadeUp .5s .45s ease both
+}
+.success-sub strong{color:var(--text-2)}
+
+/* ── EMAIL BOX ── */
+.success-email-box{
+  background:var(--navy-xlt);border:1px solid var(--navy-lt);
+  border-radius:12px;padding:14px 20px;
+  display:flex;align-items:center;gap:12px;
+  margin-bottom:32px;text-align:left;
+  animation:fadeUp .5s .5s ease both
+}
+.success-email-icon{font-size:24px;flex-shrink:0}
+.success-email-text{font-size:13px;color:var(--text-2);line-height:1.6}
+.success-email-val{font-weight:700;color:var(--navy-mid);font-size:14px;margin-top:2px}
+
+/* ── STEPS INFO ── */
+.success-steps{
+  background:var(--surface);border-radius:12px;
+  padding:16px 20px;margin-bottom:32px;
+  animation:fadeUp .5s .55s ease both
+}
+.success-step-item{
+  display:flex;align-items:flex-start;gap:12px;
+  padding:8px 0;border-bottom:1px solid var(--border)
+}
+.success-step-item:last-child{border-bottom:none}
+.success-step-num{
+  width:22px;height:22px;border-radius:50%;
+  background:var(--navy-lt);color:var(--navy-mid);
+  font-size:11px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;margin-top:1px
+}
+.success-step-text{font-size:12px;color:var(--text-2);line-height:1.6}
+
+/* ── BUTTONS ── */
+.success-btn-row{
+  display:flex;flex-direction:column;gap:10px;
+  animation:fadeUp .5s .6s ease both
+}
+.btn{
+  padding:13px 28px;border-radius:10px;font-size:14px;font-weight:700;
+  font-family:'Public Sans',sans-serif;cursor:pointer;border:none;
+  transition:all .2s;display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  width:100%
+}
+.btn-primary{
+  background:linear-gradient(135deg,var(--navy-mid),var(--navy-dark));
+  color:#fff;box-shadow:0 2px 8px rgba(15,36,71,.25)
+}
+.btn-primary:hover{
+  background:linear-gradient(135deg,#3367B5,var(--navy));
+  box-shadow:0 4px 16px rgba(15,36,71,.32);transform:translateY(-1px)
+}
+.btn-ghost{
+  background:transparent;color:var(--navy);border:1.5px solid #D8DCE8
+}
+.btn-ghost:hover{background:var(--navy-xlt);border-color:var(--navy-mid)}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── CONFETTI CANVAS ── */
+canvas#confetti-canvas{
+  position:fixed;inset:0;pointer-events:none;z-index:999
+}
+</style>
+</head>
+<body>
+
+<canvas id="confetti-canvas"></canvas>
+
+<div class="success-page">
+  <div class="success-card">
+
+    <!-- Check mark -->
+    <div class="success-check-wrap">
+      <span class="success-check-mark">✓</span>
+    </div>
+
+    <!-- Brand pill -->
+    <div class="success-brand-pill">
+      <span class="success-brand-pill-icon">💧</span>
+      <span class="success-brand-pill-text">ระบบน้ำบาดาล GCL</span>
+    </div>
+
+    <!-- Title -->
+    <h1 class="success-title">สมัครใช้งานสำเร็จ!</h1>
+    <p class="success-sub">บัญชีของท่านถูกสร้างเรียบร้อยแล้ว<br>ระบบได้ส่งอีเมลยืนยันไปยัง</p>
+
+    <!-- Email display -->
+    <div class="success-email-box">
+      <span class="success-email-icon">📧</span>
+      <div>
+        <div class="success-email-text">อีเมลยืนยันบัญชีถูกส่งไปยัง</div>
+        <div class="success-email-val" id="success-email">—</div>
+      </div>
+    </div>
+
+    <!-- Next steps -->
+    <div class="success-steps">
+      <div class="success-step-item">
+        <div class="success-step-num">1</div>
+        <div class="success-step-text">ตรวจสอบอีเมลและกดลิงก์ยืนยันตัวตน ภายใน 24 ชั่วโมง</div>
+      </div>
+      <div class="success-step-item">
+        <div class="success-step-num">2</div>
+        <div class="success-step-text">เข้าสู่ระบบและยื่นคำขอใบอนุญาตเจาะน้ำบาดาลหรือใช้น้ำบาดาล</div>
+      </div>
+      <div class="success-step-item">
+        <div class="success-step-num">3</div>
+        <div class="success-step-text">ติดตามสถานะคำขอผ่านระบบออนไลน์ได้ตลอด 24 ชั่วโมง</div>
+      </div>
+    </div>
+
+    <!-- Buttons -->
+    <div class="success-btn-row">
+      <button class="btn btn-primary" onclick="goLogin()">
+        🔐 เข้าสู่ระบบ
+      </button>
+      <button class="btn btn-ghost" onclick="window.location.href='index.html'">
+        กลับหน้าหลัก
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// Show email from localStorage
+(function(){
+  var raw = localStorage.getItem('gcl_account_saved') || localStorage.getItem('gcl_account');
+  if (raw) {
+    try {
+      var d = JSON.parse(raw);
+      if (d && d.email) document.getElementById('success-email').textContent = d.email;
+    } catch(e){}
+  }
+})();
+
+function goLogin() {
+  // Clean up registration data
+  localStorage.removeItem('gcl_org_type');
+  localStorage.removeItem('gcl_personal_data');
+  localStorage.removeItem('gcl_account');
+  localStorage.removeItem('gcl_account_saved');
+  window.location.href = 'index.html';
+}
+
+// ── CONFETTI ──
+(function(){
+  var canvas = document.getElementById('confetti-canvas');
+  var ctx = canvas.getContext('2d');
+  var W, H;
+  var particles = [];
+  var colors = ['#2C5AA0','#16A34A','#D4A017','#0F7A5E','#60A5FA','#34D399','#FBBF24','#A78BFA'];
+
+  function resize(){
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  function Particle(){
+    this.x = Math.random() * W;
+    this.y = -10 - Math.random() * 40;
+    this.w = 6 + Math.random() * 8;
+    this.h = 3 + Math.random() * 4;
+    this.color = colors[Math.floor(Math.random() * colors.length)];
+    this.vx = (Math.random() - .5) * 2;
+    this.vy = 2 + Math.random() * 3.5;
+    this.rot = Math.random() * Math.PI * 2;
+    this.rotV = (Math.random() - .5) * .15;
+    this.alpha = 1;
+    this.gravity = .04 + Math.random() * .04;
+  }
+
+  // Spawn burst
+  for (var i = 0; i < 120; i++) {
+    var p = new Particle();
+    p.y = H * .35 + (Math.random() - .5) * 80;
+    p.x = W * .5 + (Math.random() - .5) * 220;
+    p.vy = -6 - Math.random() * 8;
+    p.vx = (Math.random() - .5) * 10;
+    p.alpha = 1;
+    particles.push(p);
+  }
+
+  var frameCount = 0;
+  var maxFrames = 260;
+
+  function draw(){
+    if (frameCount > maxFrames && particles.length === 0) return;
+    frameCount++;
+    ctx.clearRect(0, 0, W, H);
+
+    // Add trickle
+    if (frameCount < 60 && frameCount % 3 === 0) {
+      for (var j = 0; j < 4; j++) particles.push(new Particle());
+    }
+
+    for (var i = particles.length - 1; i >= 0; i--) {
+      var p = particles[i];
+      p.x += p.vx;
+      p.vy += p.gravity;
+      p.y += p.vy;
+      p.rot += p.rotV;
+      if (p.y > H + 20) { p.alpha -= .08; }
+      if (p.alpha <= 0) { particles.splice(i,1); continue; }
+      ctx.save();
+      ctx.globalAlpha = p.alpha;
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot);
+      ctx.fillStyle = p.color;
+      ctx.beginPath();
+      ctx.roundRect(-p.w/2, -p.h/2, p.w, p.h, 2);
+      ctx.fill();
+      ctx.restore();
+    }
+    if (particles.length > 0 || frameCount < maxFrames) requestAnimationFrame(draw);
+    else { ctx.clearRect(0,0,W,H); }
+  }
+  requestAnimationFrame(draw);
+})();
+</script>
+</body>
+</html>

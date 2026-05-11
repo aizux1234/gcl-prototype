@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ข้อมูลส่วนตัว — ระบบน้ำบาดาล GCL</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1B3A6B;--navy-dark:#0F2447;--navy-mid:#2C5AA0;--navy-lt:#E8EEF7;--navy-xlt:#F4F7FC;
+  --gold:#B8860B;--gold-bright:#D4A017;--gold-lt:#FBF4E0;
+  --teal:#0A5C47;--teal-mid:#0F7A5E;--teal-lt:#E2F4EE;
+  --ok:#166534;--ok-lt:#DCFCE7;--ok-mid:#16A34A;
+  --warn:#92400E;--warn-lt:#FEF3C7;--warn-mid:#D97706;
+  --err:#991B1B;--err-lt:#FEE2E2;--err-mid:#DC2626;
+  --surface:#F0F2F7;--border:rgba(27,58,107,0.10);--border-mid:rgba(27,58,107,0.18);
+  --text:#0F172A;--text-2:#374151;--text-3:#94A3B8;--white:#fff;
+  --shadow-sm:0 1px 3px rgba(15,20,40,.06);
+  --shadow-md:0 4px 16px rgba(15,36,71,.08),0 1px 4px rgba(15,36,71,.04);
+  --shadow-lg:0 12px 40px rgba(15,36,71,.13),0 4px 12px rgba(15,36,71,.06);
+  --radius:12px;--radius-lg:18px;
+}
+html,body{font-family:'Public Sans',sans-serif;height:100%;overflow:hidden;color:var(--text)}
+.reg-wrap{display:flex;width:100vw;height:100vh;overflow:hidden}
+
+/* ── LEFT PANEL ── */
+.reg-left{
+  width:380px;flex-shrink:0;
+  background:linear-gradient(155deg,var(--navy-dark) 0%,var(--navy) 45%,#1E4D8C 100%);
+  display:flex;flex-direction:column;justify-content:space-between;
+  padding:48px 40px;position:relative;overflow:hidden
+}
+.reg-left::before{
+  content:'';position:absolute;inset:0;
+  background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  pointer-events:none
+}
+.reg-left::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:180px;
+  background:linear-gradient(to top,rgba(15,36,71,.5),transparent);pointer-events:none
+}
+.reg-brand{position:relative;z-index:1}
+.reg-brand-icon{
+  width:72px;height:72px;border-radius:50%;
+  background:rgba(255,255,255,.92);border:2px solid var(--gold-bright);
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:20px;font-size:30px;
+  box-shadow:0 0 0 8px rgba(212,160,23,.12),0 8px 32px rgba(15,36,71,.4)
+}
+.reg-brand-name{font-size:19px;font-weight:800;color:#fff;line-height:1.3;margin-bottom:4px}
+.reg-brand-sub{font-size:10px;color:rgba(255,255,255,.5);font-weight:400;letter-spacing:.06em;text-transform:uppercase}
+.reg-brand-divider{width:36px;height:2px;background:var(--gold-bright);border-radius:2px;margin:16px 0}
+.reg-brand-tagline{font-size:12px;color:rgba(255,255,255,.6);line-height:1.75;max-width:260px}
+
+/* ── STEP TRACKER ── */
+.step-tracker{position:relative;z-index:1;margin-top:36px}
+.step-list{display:flex;flex-direction:column}
+.step-item{display:flex;align-items:flex-start;gap:14px}
+.step-connector-wrap{display:flex;flex-direction:column;align-items:center;flex-shrink:0}
+.step-circle{
+  width:32px;height:32px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;transition:all .3s;flex-shrink:0
+}
+.step-circle.todo{background:rgba(255,255,255,.1);color:rgba(255,255,255,.35)}
+.step-circle.active{background:#fff;color:var(--navy);box-shadow:0 0 0 4px rgba(255,255,255,.2)}
+.step-circle.done{background:var(--ok-mid);color:#fff}
+.step-vline{width:2px;height:28px;background:rgba(255,255,255,.15);border-radius:2px;flex-shrink:0}
+.step-text{padding-top:5px;padding-bottom:16px}
+.step-num{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:2px}
+.step-num.todo{color:rgba(255,255,255,.3)}
+.step-num.active{color:rgba(255,255,255,.85)}
+.step-num.done{color:rgba(255,255,255,.55)}
+.step-label{font-size:13px;font-weight:600}
+.step-label.todo{color:rgba(255,255,255,.3)}
+.step-label.active{color:#fff}
+.step-label.done{color:rgba(255,255,255,.6)}
+
+/* ── LEFT FOOTER ── */
+.reg-left-footer{position:relative;z-index:1}
+.reg-back-link{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:13px;font-weight:500;color:rgba(255,255,255,.5);
+  background:none;border:none;cursor:pointer;
+  font-family:'Public Sans',sans-serif;transition:color .2s;padding:0
+}
+.reg-back-link:hover{color:#fff}
+
+/* ── RIGHT PANEL ── */
+.reg-right{flex:1;background:#fff;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+.reg-progress-bar{height:3px;background:var(--navy-lt);flex-shrink:0}
+.reg-progress-fill{height:100%;background:linear-gradient(90deg,var(--navy-mid),var(--navy));transition:width .6s ease}
+.reg-right-scroll{flex:1;overflow-y:auto;overflow-x:hidden}
+.reg-content{
+  padding:52px 56px;max-width:560px;margin:0 auto;
+  animation:fadeUp .45s ease both
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── BADGE / TITLE ── */
+.reg-step-badge{
+  display:inline-block;
+  background:var(--navy-lt);color:var(--navy-mid);
+  font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  padding:4px 10px;border-radius:20px;margin-bottom:16px
+}
+.reg-title{font-size:24px;font-weight:800;color:var(--navy);margin-bottom:6px;letter-spacing:-.3px}
+.reg-subtitle{font-size:13px;color:var(--text-3);margin-bottom:28px;line-height:1.6}
+
+/* ── FORM FIELDS ── */
+.field-group{display:flex;flex-direction:column;gap:5px;margin-bottom:16px}
+.field-group label{font-size:12px;font-weight:600;color:var(--text-2)}
+.field-group input,
+.field-group select,
+.field-group textarea{
+  padding:11px 14px;border-radius:9px;
+  border:1.5px solid #D8DCE8;font-size:14px;
+  font-family:'Public Sans',sans-serif;color:var(--text);
+  outline:none;transition:all .2s;background:#FAFBFD;width:100%
+}
+.field-group input:focus,
+.field-group select:focus,
+.field-group textarea:focus{
+  border-color:var(--navy-mid);
+  box-shadow:0 0 0 3px rgba(44,90,160,.10);background:#fff
+}
+.field-group input::placeholder,
+.field-group textarea::placeholder{color:#B0B4C8}
+.field-group select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2394A3B8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center}
+.field-group textarea{resize:vertical;min-height:88px;line-height:1.6}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+
+/* ── SECTION HEADER ── */
+.section-header{
+  font-size:11px;font-weight:700;color:var(--text-3);
+  text-transform:uppercase;letter-spacing:.08em;
+  padding:12px 0 10px;border-bottom:1px solid var(--border);margin-bottom:16px
+}
+
+/* ── FORM VARIANTS ── */
+.form-variant{display:none}
+.form-variant.visible{display:block}
+
+/* ── FORM ACTIONS ── */
+.form-actions{
+  display:flex;justify-content:space-between;align-items:center;
+  padding-top:24px;border-top:1px solid var(--border);margin-top:8px
+}
+.btn{
+  padding:11px 28px;border-radius:10px;font-size:14px;font-weight:700;
+  font-family:'Public Sans',sans-serif;cursor:pointer;border:none;
+  transition:all .2s;display:inline-flex;align-items:center;gap:8px
+}
+.btn-primary{
+  background:linear-gradient(135deg,var(--navy-mid),var(--navy-dark));
+  color:#fff;box-shadow:0 2px 8px rgba(15,36,71,.25)
+}
+.btn-primary:hover{
+  background:linear-gradient(135deg,#3367B5,var(--navy));
+  box-shadow:0 4px 16px rgba(15,36,71,.32);transform:translateY(-1px)
+}
+.btn-ghost{background:transparent;color:var(--navy);border:1.5px solid #D8DCE8}
+.btn-ghost:hover{background:var(--navy-xlt);border-color:var(--navy-mid)}
+</style>
+</head>
+<body>
+<div class="reg-wrap">
+
+  <!-- ── LEFT PANEL ── -->
+  <div class="reg-left">
+    <div>
+      <div class="reg-brand">
+        <div class="reg-brand-icon">💧</div>
+        <div class="reg-brand-name">ระบบน้ำบาดาล GCL</div>
+        <div class="reg-brand-sub">Groundwater Management System</div>
+        <div class="reg-brand-divider"></div>
+        <div class="reg-brand-tagline">สมัครใช้งานเพื่อยื่นคำขอใบอนุญาต<br>เจาะน้ำบาดาลและใช้น้ำบาดาล</div>
+      </div>
+
+      <div class="step-tracker">
+        <div class="step-list">
+          <div class="step-item">
+            <div class="step-connector-wrap">
+              <div class="step-circle done">✓</div>
+              <div class="step-vline"></div>
+            </div>
+            <div class="step-text">
+              <div class="step-num done">ขั้นตอนที่ 1</div>
+              <div class="step-label done">ประเภทผู้ประกอบการ</div>
+            </div>
+          </div>
+          <div class="step-item">
+            <div class="step-connector-wrap">
+              <div class="step-circle active">2</div>
+              <div class="step-vline"></div>
+            </div>
+            <div class="step-text">
+              <div class="step-num active">ขั้นตอนที่ 2</div>
+              <div class="step-label active">ข้อมูลส่วนตัว</div>
+            </div>
+          </div>
+          <div class="step-item">
+            <div class="step-connector-wrap">
+              <div class="step-circle todo">3</div>
+              <div class="step-vline"></div>
+            </div>
+            <div class="step-text">
+              <div class="step-num todo">ขั้นตอนที่ 3</div>
+              <div class="step-label todo">ตั้งค่าบัญชี</div>
+            </div>
+          </div>
+          <div class="step-item">
+            <div class="step-connector-wrap">
+              <div class="step-circle todo">4</div>
+            </div>
+            <div class="step-text">
+              <div class="step-num todo">ขั้นตอนที่ 4</div>
+              <div class="step-label todo">ยืนยันข้อมูล</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="reg-left-footer">
+      <button class="reg-back-link" onclick="window.location.href='register-1.html'">
+        ← กลับขั้นตอนก่อนหน้า
+      </button>
+    </div>
+  </div>
+
+  <!-- ── RIGHT PANEL ── -->
+  <div class="reg-right">
+    <div class="reg-progress-bar">
+      <div class="reg-progress-fill" style="width:37%"></div>
+    </div>
+    <div class="reg-right-scroll">
+      <div class="reg-content">
+        <div class="reg-step-badge">ขั้นตอนที่ 2 จาก 4</div>
+        <h1 class="reg-title" id="page-title">ข้อมูลส่วนตัว</h1>
+        <p class="reg-subtitle" id="page-subtitle">กรุณากรอกข้อมูลให้ครบถ้วนและถูกต้อง เพื่อประกอบการพิจารณาคำขอ</p>
+
+        <!-- ── FORM: บุคคลธรรมดา ── -->
+        <div class="form-variant" id="form-individual">
+          <div class="section-header">ข้อมูลบุคคล</div>
+          <div class="field-row">
+            <div class="field-group">
+              <label for="ind-fname">ชื่อ <span style="color:var(--err)">*</span></label>
+              <input type="text" id="ind-fname" placeholder="ชื่อจริง">
+            </div>
+            <div class="field-group">
+              <label for="ind-lname">นามสกุล <span style="color:var(--err)">*</span></label>
+              <input type="text" id="ind-lname" placeholder="นามสกุล">
+            </div>
+          </div>
+          <div class="field-group">
+            <label for="ind-idcard">เลขบัตรประชาชน <span style="color:var(--err)">*</span></label>
+            <input type="text" id="ind-idcard" placeholder="X-XXXX-XXXXX-XX-X" maxlength="17">
+          </div>
+          <div class="field-group">
+            <label for="ind-dob">วันเกิด <span style="color:var(--err)">*</span></label>
+            <input type="date" id="ind-dob">
+          </div>
+          <div class="field-group">
+            <label for="ind-addr">ที่อยู่ปัจจุบัน <span style="color:var(--err)">*</span></label>
+            <textarea id="ind-addr" placeholder="บ้านเลขที่ ถนน ตำบล อำเภอ จังหวัด รหัสไปรษณีย์"></textarea>
+          </div>
+        </div>
+
+        <!-- ── FORM: นิติบุคคล ── -->
+        <div class="form-variant" id="form-company">
+          <div class="section-header">ข้อมูลนิติบุคคล</div>
+          <div class="field-group">
+            <label for="co-name">ชื่อบริษัท / ห้างหุ้นส่วน <span style="color:var(--err)">*</span></label>
+            <input type="text" id="co-name" placeholder="ชื่อองค์กรตามทะเบียนราชการ">
+          </div>
+          <div class="field-group">
+            <label for="co-regno">เลขทะเบียนนิติบุคคล <span style="color:var(--err)">*</span></label>
+            <input type="text" id="co-regno" placeholder="0000000000000">
+          </div>
+          <div class="field-group">
+            <label for="co-addr">ที่อยู่จดทะเบียน <span style="color:var(--err)">*</span></label>
+            <textarea id="co-addr" placeholder="ที่อยู่ตามทะเบียนบริษัท"></textarea>
+          </div>
+          <div class="section-header" style="margin-top:8px">ผู้ติดต่อหลัก</div>
+          <div class="field-group">
+            <label for="co-contact">ชื่อ-นามสกุล ผู้ติดต่อ <span style="color:var(--err)">*</span></label>
+            <input type="text" id="co-contact" placeholder="ชื่อผู้มีอำนาจหรือผู้รับมอบอำนาจ">
+          </div>
+        </div>
+
+        <!-- ── FORM: วัด / โรงเรียน ── -->
+        <div class="form-variant" id="form-temple">
+          <div class="section-header">ข้อมูลสถาบัน</div>
+          <div class="field-group">
+            <label for="tp-name">ชื่อวัด / โรงเรียน / สถาบัน <span style="color:var(--err)">*</span></label>
+            <input type="text" id="tp-name" placeholder="ชื่อเต็มของสถาบัน">
+          </div>
+          <div class="field-group">
+            <label for="tp-type">ประเภทสถาบัน <span style="color:var(--err)">*</span></label>
+            <select id="tp-type">
+              <option value="">— กรุณาเลือก —</option>
+              <option value="wat">วัด</option>
+              <option value="school">โรงเรียน</option>
+              <option value="other">อื่นๆ</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label for="tp-regno">เลขทะเบียน / รหัสสถานศึกษา</label>
+            <input type="text" id="tp-regno" placeholder="เลขทะเบียนหรือรหัสสถาบัน (ถ้ามี)">
+          </div>
+          <div class="field-group">
+            <label for="tp-addr">ที่อยู่สถาบัน <span style="color:var(--err)">*</span></label>
+            <textarea id="tp-addr" placeholder="บ้านเลขที่ ถนน ตำบล อำเภอ จังหวัด รหัสไปรษณีย์"></textarea>
+          </div>
+        </div>
+
+        <!-- No type selected fallback -->
+        <div class="form-variant visible" id="form-none">
+          <div style="text-align:center;padding:48px 0;color:var(--text-3)">
+            <div style="font-size:48px;margin-bottom:16px">⚠️</div>
+            <div style="font-size:15px;font-weight:600;margin-bottom:8px;color:var(--warn)">ไม่พบข้อมูลประเภทผู้ประกอบการ</div>
+            <div style="font-size:13px">กรุณากลับไปเลือกประเภทในขั้นตอนที่ 1</div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn btn-ghost" onclick="window.location.href='register-1.html'">
+            ← ย้อนกลับ
+          </button>
+          <button class="btn btn-primary" onclick="goNext()">
+            ถัดไป <span style="font-size:16px">→</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+<script>
+(function(){
+  var type = localStorage.getItem('gcl_org_type');
+  var titles = {
+    individual: 'ข้อมูลบุคคลธรรมดา',
+    company: 'ข้อมูลนิติบุคคล',
+    temple: 'ข้อมูลวัด / โรงเรียน'
+  };
+  var subtitles = {
+    individual: 'กรอกข้อมูลส่วนตัวตามบัตรประชาชน เพื่อประกอบการพิจารณาคำขอ',
+    company: 'กรอกข้อมูลองค์กรตามทะเบียนพาณิชย์และผู้ติดต่อหลัก',
+    temple: 'กรอกข้อมูลสถาบันเพื่อประกอบการยื่นคำขอใช้น้ำบาดาล'
+  };
+  if (type && titles[type]) {
+    document.getElementById('page-title').textContent = titles[type];
+    document.getElementById('page-subtitle').textContent = subtitles[type];
+    document.getElementById('form-none').classList.remove('visible');
+    document.getElementById('form-' + type).classList.add('visible');
+  }
+})();
+
+function saveFormData() {
+  var type = localStorage.getItem('gcl_org_type');
+  var data = {};
+  if (type === 'individual') {
+    data.firstName = document.getElementById('ind-fname').value;
+    data.lastName = document.getElementById('ind-lname').value;
+    data.idCard = document.getElementById('ind-idcard').value;
+    data.dob = document.getElementById('ind-dob').value;
+    data.address = document.getElementById('ind-addr').value;
+  } else if (type === 'company') {
+    data.companyName = document.getElementById('co-name').value;
+    data.regNo = document.getElementById('co-regno').value;
+    data.address = document.getElementById('co-addr').value;
+    data.contactName = document.getElementById('co-contact').value;
+  } else if (type === 'temple') {
+    data.name = document.getElementById('tp-name').value;
+    data.instType = document.getElementById('tp-type').value;
+    data.regNo = document.getElementById('tp-regno').value;
+    data.address = document.getElementById('tp-addr').value;
+  }
+  localStorage.setItem('gcl_personal_data', JSON.stringify(data));
+  return data;
+}
+
+function goNext() {
+  var type = localStorage.getItem('gcl_org_type');
+  if (!type) { window.location.href = 'register-1.html'; return; }
+  saveFormData();
+  window.location.href = 'register-3.html';
+}
+
+// Restore previously saved data
+(function(){
+  var type = localStorage.getItem('gcl_org_type');
+  var saved = localStorage.getItem('gcl_personal_data');
+  if (!saved || !type) return;
+  var d;
+  try { d = JSON.parse(saved); } catch(e){ return; }
+  if (type === 'individual') {
+    if (d.firstName) document.getElementById('ind-fname').value = d.firstName;
+    if (d.lastName) document.getElementById('ind-lname').value = d.lastName;
+    if (d.idCard) document.getElementById('ind-idcard').value = d.idCard;
+    if (d.dob) document.getElementById('ind-dob').value = d.dob;
+    if (d.address) document.getElementById('ind-addr').value = d.address;
+  } else if (type === 'company') {
+    if (d.companyName) document.getElementById('co-name').value = d.companyName;
+    if (d.regNo) document.getElementById('co-regno').value = d.regNo;
+    if (d.address) document.getElementById('co-addr').value = d.address;
+    if (d.contactName) document.getElementById('co-contact').value = d.contactName;
+  } else if (type === 'temple') {
+    if (d.name) document.getElementById('tp-name').value = d.name;
+    if (d.instType) document.getElementById('tp-type').value = d.instType;
+    if (d.regNo) document.getElementById('tp-regno').value = d.regNo;
+    if (d.address) document.getElementById('tp-addr').value = d.address;
+  }
+})();
+
+// ID card formatter
+var idInput = document.getElementById('ind-idcard');
+if (idInput) {
+  idInput.addEventListener('input', function(){
+    var v = this.value.replace(/[^0-9]/g,'');
+    var fmt = '';
+    for (var i = 0; i < v.length && i < 13; i++) {
+      if (i===1||i===5||i===10||i===12) fmt += '-';
+      fmt += v[i];
+    }
+    this.value = fmt;
+  });
+}
+</script>
+</body>
+</html>

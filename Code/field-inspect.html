@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>บันทึกผลการตรวจสถานที่ — ระบบน้ำบาดาล GCL</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Thai:wght@400;500;600;700;800&family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1B3A6B;--navy-dark:#0F2447;--navy-mid:#2C5AA0;--navy-lt:#E8EEF7;--navy-xlt:#F4F7FC;
+  --teal:#0A5C47;--teal-mid:#0F7A5E;--teal-lt:#E2F4EE;
+  --ok:#166534;--ok-lt:#DCFCE7;--ok-mid:#16A34A;
+  --warn:#92400E;--warn-lt:#FEF3C7;--warn-mid:#D97706;
+  --err:#991B1B;--err-lt:#FEE2E2;--err-mid:#DC2626;
+  --surface:#F0F2F7;--border:rgba(27,58,107,0.10);--border-mid:rgba(27,58,107,0.18);
+  --text:#0F172A;--text-2:#374151;--text-3:#94A3B8;
+  --shadow-sm:0 1px 3px rgba(15,20,40,.06),0 1px 2px rgba(15,20,40,.04);
+  --shadow-md:0 4px 16px rgba(15,36,71,.08),0 1px 4px rgba(15,36,71,.04);
+  --radius:12px;--radius-lg:18px;
+}
+html,body{font-family:'Sarabun',sans-serif;background:var(--surface);color:var(--text);height:100%;overflow:hidden}
+h1,h2,h3{font-family:'Noto Serif Thai','Sarabun',sans-serif}
+.app-wrap{display:flex;height:100vh}
+.sidebar{width:240px;background:linear-gradient(180deg,var(--warn) 0%,#7A3408 100%);display:flex;flex-direction:column;padding:24px 0;flex-shrink:0}
+.sidebar-brand{padding:0 20px 24px;border-bottom:1px solid rgba(255,255,255,.15)}
+.sidebar-brand-title{font-family:'Noto Serif Thai',sans-serif;font-size:15px;font-weight:700;color:#fff;line-height:1.4}
+.sidebar-brand-sub{font-size:11px;color:rgba(255,255,255,.5);margin-top:4px}
+.sidebar-nav{padding:16px 12px;flex:1}
+.field-nav{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;font-size:13px;font-weight:600;color:rgba(255,255,255,.7);text-decoration:none;transition:all .2s;margin-bottom:4px}
+.field-nav:hover,.field-nav.active{background:rgba(255,255,255,.15);color:#fff}
+.sidebar-user{padding:16px 20px;border-top:1px solid rgba(255,255,255,.15)}
+.sidebar-user-name{font-size:13px;font-weight:600;color:#fff}
+.sidebar-user-sub{font-size:11px;color:rgba(255,255,255,.5)}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.btn{padding:10px 20px;border-radius:10px;border:none;font-size:14px;font-weight:700;cursor:pointer;font-family:'Sarabun',sans-serif;transition:all .2s;display:inline-flex;align-items:center;gap:6px;text-decoration:none}
+.btn-primary{background:var(--navy);color:#fff}
+.btn-primary:hover{background:var(--navy-mid)}
+.btn-outline{background:transparent;color:var(--navy);border:1.5px solid var(--navy)}
+.btn-outline:hover{background:var(--navy-lt)}
+.btn-teal{background:var(--teal);color:#fff}
+.btn-teal:hover{background:#0a5442}
+.btn-sm{padding:6px 14px;font-size:12px;border-radius:7px}
+.status-badge{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700}
+.status-pending{background:var(--warn-lt);color:var(--warn)}
+.form-section{padding:24px 40px;border-bottom:1px solid var(--border)}
+.section-title{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:16px}
+.field-group{display:flex;flex-direction:column;gap:6px;margin-bottom:0}
+.field-group label{font-size:13px;font-weight:600;color:var(--text-2)}
+.field-group input,.field-group textarea{padding:11px 14px;border-radius:9px;border:1.5px solid #D8DCE8;font-size:14px;font-family:'Sarabun',sans-serif;color:var(--text);outline:none;transition:border-color .2s;background:#FAFBFD}
+.field-group input:focus,.field-group textarea:focus{border-color:var(--navy-mid);box-shadow:0 0 0 3px rgba(44,90,160,.08)}
+.field-group input::placeholder,.field-group textarea::placeholder{color:#B0B4C8}
+.photo-thumb{aspect-ratio:1;border-radius:10px;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:32px}
+.photo-add{aspect-ratio:1;border-radius:10px;border:2px dashed var(--border-mid);display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--text-3);cursor:pointer;transition:all .2s;flex-direction:column;gap:4px}
+.photo-add:hover{border-color:var(--navy-mid);color:var(--navy-mid);background:var(--navy-xlt)}
+.result-option{display:flex;flex-direction:column;align-items:center;text-align:center;padding:20px;border-radius:14px;border:2px solid var(--border-mid);background:#fff;cursor:pointer;transition:all .2s}
+.result-option:hover{border-color:var(--navy-mid);background:var(--navy-xlt)}
+.result-option:has(input:checked){border-color:var(--navy);background:var(--navy-lt)}
+.result-icon{font-size:32px;margin-bottom:8px}
+.result-label{font-size:15px;font-weight:700;color:var(--navy);margin-bottom:4px}
+.result-desc{font-size:11px;color:var(--text-3);line-height:1.5}
+</style>
+</head>
+<body>
+<div class="app-wrap">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-brand-title">กรมทรัพยากรน้ำบาดาล</div>
+      <div class="sidebar-brand-sub">เจ้าหน้าที่ภาคสนาม</div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="field-officer.html" class="field-nav">🏠 งานที่ได้รับมอบหมาย</a>
+    </nav>
+    <div class="sidebar-user">
+      <div class="sidebar-user-name">นายสมชาย ภาคสนาม</div>
+      <div class="sidebar-user-sub">เจ้าหน้าที่ภาคสนาม เขต 5</div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="main">
+
+    <!-- Case header -->
+    <div style="background:#fff;border-bottom:1px solid var(--border);padding:16px 40px;display:flex;align-items:center;gap:16px;flex-shrink:0">
+      <a href="field-officer.html" style="font-size:22px;color:var(--text-3);text-decoration:none;line-height:1">←</a>
+      <div style="flex:1">
+        <div style="font-size:12px;color:var(--text-3);margin-bottom:2px">คำขอ #GCL-2025-00142</div>
+        <div style="font-size:16px;font-weight:700;color:var(--navy)">นายสมศักดิ์ ใจดี — เจาะน้ำบาดาลใหม่</div>
+      </div>
+      <span class="status-badge status-pending">รอลงพื้นที่</span>
+    </div>
+
+    <!-- Scrollable form body -->
+    <div style="flex:1;overflow-y:auto">
+
+      <!-- GPS Section -->
+      <div class="form-section">
+        <div class="section-title">📍 พิกัด GPS</div>
+        <div style="background:#E5E7EB;border-radius:12px;height:200px;display:flex;align-items:center;justify-content:center;color:#9CA3AF;font-size:14px;margin-bottom:12px;overflow:hidden;position:relative">
+          <div style="text-align:center">
+            <div style="font-size:32px;margin-bottom:8px">🗺️</div>
+            <div>แผนที่ (Leaflet.js)</div>
+            <div style="font-size:11px;margin-top:4px">18.796143, 98.979263</div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+          <div class="field-group">
+            <label>Latitude</label>
+            <input type="number" id="lat" step="0.000001" placeholder="18.796143" value="18.796143">
+          </div>
+          <div class="field-group">
+            <label>Longitude</label>
+            <input type="number" id="lng" step="0.000001" placeholder="98.979263" value="98.979263">
+          </div>
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="detectLocation()">📡 ใช้ตำแหน่งปัจจุบัน</button>
+      </div>
+
+      <!-- Photo Section -->
+      <div class="form-section">
+        <div class="section-title">📷 รูปถ่ายสถานที่</div>
+        <div id="photo-grid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:12px">
+          <div class="photo-thumb">🏗️</div>
+          <div class="photo-thumb">🌿</div>
+          <div class="photo-add" onclick="document.getElementById('file-input').click()">
+            <span style="font-size:20px">+</span>
+            <span>เพิ่มรูป</span>
+          </div>
+        </div>
+        <input type="file" id="file-input" accept="image/*" multiple style="display:none" onchange="handleFiles(this)">
+        <p style="font-size:11px;color:var(--text-3)">ต้องการอย่างน้อย 1 รูป — รองรับ JPG, PNG (ขนาดสูงสุด 5 MB ต่อรูป)</p>
+      </div>
+
+      <!-- Result Section -->
+      <div class="form-section" style="border-bottom:none">
+        <div class="section-title">📋 ผลการตรวจสอบ</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+          <label class="result-option" for="result-pass">
+            <input type="radio" name="result" id="result-pass" value="pass" style="display:none">
+            <div class="result-icon">✅</div>
+            <div class="result-label">ผ่าน</div>
+            <div class="result-desc">สถานที่เหมาะสม สามารถดำเนินการได้</div>
+          </label>
+          <label class="result-option" for="result-fail">
+            <input type="radio" name="result" id="result-fail" value="fail" style="display:none">
+            <div class="result-icon">❌</div>
+            <div class="result-label">ไม่ผ่าน</div>
+            <div class="result-desc">สถานที่ไม่เหมาะสมหรือมีข้อขัดแย้ง</div>
+          </label>
+        </div>
+        <div class="field-group">
+          <label>หมายเหตุ <span id="note-required" style="color:var(--err);display:none">*</span></label>
+          <textarea id="note" rows="4" placeholder="รายละเอียดเพิ่มเติมจากการตรวจสอบ..."></textarea>
+        </div>
+      </div>
+
+    </div><!-- end scrollable -->
+
+    <!-- Footer actions -->
+    <div style="padding:16px 40px;border-top:1px solid var(--border);background:#fff;display:flex;justify-content:flex-end;gap:12px;flex-shrink:0">
+      <a href="field-officer.html" class="btn btn-outline">ยกเลิก</a>
+      <button class="btn btn-teal" onclick="submitResult()">✓ ส่งผลการตรวจ</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll('input[name="result"]').forEach(r => {
+    r.addEventListener('change', () => {
+      document.getElementById('note-required').style.display = r.value === 'fail' ? 'inline' : 'none';
+    });
+  });
+
+  function detectLocation() {
+    if (!navigator.geolocation) { alert('เบราว์เซอร์ไม่รองรับ GPS'); return; }
+    navigator.geolocation.getCurrentPosition(pos => {
+      document.getElementById('lat').value = pos.coords.latitude.toFixed(6);
+      document.getElementById('lng').value = pos.coords.longitude.toFixed(6);
+    }, () => alert('ไม่สามารถดึงพิกัดได้ กรุณาเปิดสิทธิ์การเข้าถึงตำแหน่ง'));
+  }
+
+  function handleFiles(input) {
+    const grid = document.getElementById('photo-grid');
+    const addBtn = grid.querySelector('.photo-add');
+    Array.from(input.files).forEach(file => {
+      const reader = new FileReader();
+      reader.onload = e => {
+        const div = document.createElement('div');
+        div.style.cssText = 'aspect-ratio:1;border-radius:10px;overflow:hidden;background:#E5E7EB';
+        div.innerHTML = '<img src="'+e.target.result+'" style="width:100%;height:100%;object-fit:cover">';
+        grid.insertBefore(div, addBtn);
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function submitResult() {
+    const result = document.querySelector('input[name="result"]:checked');
+    if (!result) { alert('กรุณาเลือกผลการตรวจสอบ'); return; }
+    if (result.value === 'fail' && !document.getElementById('note').value.trim()) {
+      alert('กรุณากรอกหมายเหตุเมื่อผลไม่ผ่าน'); return;
+    }
+    window.location.href = 'field-result.html';
+  }
+</script>
+</body>
+</html>

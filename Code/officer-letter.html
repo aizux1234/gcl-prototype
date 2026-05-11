@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>สร้างใบขวาง — ระบบน้ำบาดาล GCL</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Thai:wght@400;500;600;700;800&family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1B3A6B;--navy-dark:#0F2447;--navy-mid:#2C5AA0;--navy-lt:#E8EEF7;--navy-xlt:#F4F7FC;
+  --gold:#B8860B;--gold-bright:#D4A017;--gold-lt:#FBF4E0;
+  --teal:#0A5C47;--teal-mid:#0F7A5E;--teal-lt:#E2F4EE;
+  --ok:#166534;--ok-lt:#DCFCE7;--ok-mid:#16A34A;
+  --warn:#92400E;--warn-lt:#FEF3C7;--warn-mid:#D97706;
+  --err:#991B1B;--err-lt:#FEE2E2;--err-mid:#DC2626;
+  --surface:#F0F2F7;--border:rgba(27,58,107,0.10);--border-mid:rgba(27,58,107,0.18);
+  --text:#0F172A;--text-2:#374151;--text-3:#94A3B8;--white:#fff;
+  --shadow-sm:0 1px 3px rgba(15,20,40,.06),0 1px 2px rgba(15,20,40,.04);
+  --shadow-md:0 4px 16px rgba(15,36,71,.08),0 1px 4px rgba(15,36,71,.04);
+  --shadow-lg:0 12px 40px rgba(15,36,71,.13),0 4px 12px rgba(15,36,71,.06);
+  --shadow-xl:0 24px 80px rgba(0,0,0,.22);
+  --radius:12px;--radius-lg:18px;--radius-xl:24px;
+}
+html,body{
+  font-family:'Sarabun',sans-serif;
+  background:rgba(15,36,71,.55);
+  color:var(--text);
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+}
+h1,h2,h3{font-family:'Noto Serif Thai','Sarabun',sans-serif}
+
+/* Modal box */
+.modal-box{
+  background:#fff;
+  border-radius:var(--radius-xl);
+  width:700px;
+  max-width:100%;
+  max-height:92vh;
+  overflow-y:auto;
+  box-shadow:var(--shadow-xl);
+  display:flex;
+  flex-direction:column;
+}
+
+/* Modal header */
+.modal-header{
+  padding:24px 28px 20px;
+  border-bottom:1.5px solid var(--border);
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  flex-shrink:0;
+  position:sticky;
+  top:0;
+  background:#fff;
+  z-index:10;
+}
+.modal-close{
+  width:32px;height:32px;border-radius:50%;background:var(--surface);
+  border:none;cursor:pointer;font-size:14px;display:flex;align-items:center;
+  justify-content:center;color:var(--text-2);transition:background .15s;
+  flex-shrink:0;margin-left:16px;text-decoration:none;
+}
+.modal-close:hover{background:#E8ECF4}
+
+/* Form fields */
+.field-group{display:flex;flex-direction:column;gap:6px}
+.field-group label{font-size:12px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em}
+.field-group input,.field-group textarea,.field-group select{
+  padding:10px 14px;border-radius:9px;border:1.5px solid #D8DCE8;
+  font-size:14px;font-family:'Sarabun',sans-serif;color:var(--text);
+  outline:none;transition:border-color .2s;background:#FAFBFD;
+}
+.field-group input:focus,.field-group textarea:focus{
+  border-color:var(--navy-mid);
+  box-shadow:0 0 0 3px rgba(44,90,160,.08);
+  background:#fff;
+}
+.field-group input::placeholder,.field-group textarea::placeholder{color:#B0B4C8}
+.field-group input[readonly]{background:#F8F9FA;color:var(--text-2);cursor:default}
+.field-group input[readonly]:focus{border-color:#D8DCE8;box-shadow:none}
+
+/* Buttons */
+.btn{padding:10px 20px;border-radius:10px;border:none;font-size:14px;font-weight:700;cursor:pointer;font-family:'Sarabun',sans-serif;transition:all .2s;display:inline-flex;align-items:center;gap:6px;text-decoration:none}
+.btn-primary{background:var(--navy);color:#fff}
+.btn-primary:hover{background:var(--navy-mid)}
+.btn-outline{background:transparent;color:var(--navy);border:1.5px solid var(--navy)}
+.btn-outline:hover{background:var(--navy-lt)}
+.btn-teal{background:var(--teal);color:#fff}
+.btn-teal:hover{background:#0a5442}
+.btn-sm{padding:6px 14px;font-size:12px;border-radius:7px}
+
+/* Divider */
+.form-divider{height:1px;background:var(--border);margin:4px 0}
+
+/* Section label */
+.form-section-label{
+  font-size:11px;font-weight:700;color:var(--text-3);
+  text-transform:uppercase;letter-spacing:.07em;
+  margin-bottom:16px;padding-bottom:10px;
+  border-bottom:1px solid var(--border);
+}
+
+/* Preview paper feel */
+.doc-preview{
+  background:var(--surface);
+  border-radius:14px;
+  padding:28px 32px;
+  border:1px solid var(--border);
+}
+.doc-preview-header{
+  text-align:center;
+  margin-bottom:24px;
+  padding-bottom:16px;
+  border-bottom:2px solid var(--border-mid);
+}
+
+/* Readonly badge */
+.readonly-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:10px;font-weight:700;color:var(--text-3);
+  background:#F1F3F8;padding:2px 8px;border-radius:20px;
+  margin-left:8px;text-transform:uppercase;letter-spacing:.04em;
+  vertical-align:middle;
+}
+</style>
+</head>
+<body>
+
+<div class="modal-box">
+
+  <!-- Header -->
+  <div class="modal-header">
+    <div>
+      <div style="font-family:'Noto Serif Thai',sans-serif;font-size:18px;font-weight:700;color:var(--navy)">สร้างใบขวาง</div>
+      <div style="font-size:12px;color:var(--text-3);margin-top:3px">เอกสารสรุปสำหรับนำเสนอต่อคณะกรรมการพิจารณา</div>
+    </div>
+    <a href="officer-decision-approve.html" class="modal-close" title="ปิด">✕</a>
+  </div>
+
+  <!-- Body -->
+  <div style="padding:24px 28px;flex:1">
+
+    <div class="doc-preview">
+      <!-- Document header -->
+      <div class="doc-preview-header">
+        <div style="font-family:'Noto Serif Thai',sans-serif;font-size:17px;font-weight:800;color:var(--navy);margin-bottom:4px">ใบขวาง</div>
+        <div style="font-size:13px;color:var(--text-3)">คำขอรับใบอนุญาตเจาะน้ำบาดาล / ใช้น้ำบาดาล</div>
+        <div style="font-size:11px;color:var(--text-3);margin-top:6px">ตามพระราชบัญญัติน้ำบาดาล พ.ศ. 2520</div>
+      </div>
+
+      <!-- Form fields -->
+      <div style="display:grid;gap:18px">
+
+        <!-- เรื่อง -->
+        <div class="field-group">
+          <label>เรื่อง</label>
+          <input type="text" id="f-subject" value="ขออนุมัติคำขอเจาะน้ำบาดาลใหม่ กรณีบุคคลธรรมดา">
+        </div>
+
+        <div class="form-divider"></div>
+
+        <!-- ผู้ยื่น + เลขที่คำขอ -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          <div class="field-group">
+            <label>ชื่อผู้ยื่นคำขอ</label>
+            <input type="text" id="f-name" value="นายสมศักดิ์ ใจดี">
+          </div>
+          <div class="field-group">
+            <label>เลขที่คำขอ</label>
+            <input type="text" id="f-reqid" value="GCL-2025-00142">
+          </div>
+        </div>
+
+        <!-- สถานที่ตั้ง -->
+        <div class="field-group">
+          <label>สถานที่ตั้ง</label>
+          <input type="text" id="f-location" value="12 ถ.พหลโยธิน อ.เมือง จ.เชียงใหม่">
+        </div>
+
+        <!-- ประเภทคำขอ + วัตถุประสงค์ -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          <div class="field-group">
+            <label>ประเภทคำขอ</label>
+            <input type="text" id="f-type" value="เจาะน้ำบาดาลใหม่">
+          </div>
+          <div class="field-group">
+            <label>วัตถุประสงค์</label>
+            <input type="text" id="f-purpose" value="อุปโภค-บริโภค">
+          </div>
+        </div>
+
+        <div class="form-divider"></div>
+
+        <!-- ผลการตรวจ + AI (readonly) -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          <div class="field-group">
+            <label>ผลการตรวจสถานที่ <span class="readonly-badge">🔒 อัตโนมัติ</span></label>
+            <input type="text" value="ผ่าน (05 พ.ค. 2568)" readonly>
+          </div>
+          <div class="field-group">
+            <label>ผล AI วิเคราะห์ <span class="readonly-badge">🔒 อัตโนมัติ</span></label>
+            <input type="text" value="แนะนำอนุมัติ (87%)" readonly>
+          </div>
+        </div>
+
+        <div class="form-divider"></div>
+
+        <!-- ความเห็นเจ้าหน้าที่ -->
+        <div class="field-group">
+          <label>ความเห็นของเจ้าหน้าที่ผู้ตรวจสอบ</label>
+          <textarea rows="3" id="f-opinion" placeholder="กรอกความเห็น / ข้อเสนอแนะเพิ่มเติม..."></textarea>
+        </div>
+
+        <!-- วันที่นำเสนอ -->
+        <div class="field-group" style="max-width:280px">
+          <label>วันที่นำเสนอต่อคณะกรรมการ</label>
+          <input type="date" id="f-date">
+        </div>
+
+      </div><!-- /grid -->
+    </div><!-- /doc-preview -->
+
+    <!-- Info note -->
+    <div style="margin-top:16px;padding:12px 16px;background:var(--navy-xlt);border-radius:10px;border:1px solid var(--border-mid);font-size:12px;color:var(--text-3);line-height:1.6">
+      ℹ️ ใบขวางนี้จะถูกบันทึกในระบบและแนบกับคำขอ #GCL-2025-00142 โดยอัตโนมัติ หลังจาก Generate PDF
+    </div>
+  </div>
+
+  <!-- Footer actions -->
+  <div style="padding:16px 28px 24px;border-top:1.5px solid var(--border);display:flex;justify-content:flex-end;gap:10px;flex-shrink:0;background:#fff;position:sticky;bottom:0">
+    <a href="officer-decision-approve.html" class="btn btn-outline">ยกเลิก</a>
+    <button class="btn btn-outline" onclick="previewPDF()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      Preview PDF
+    </button>
+    <button class="btn btn-teal" onclick="generatePDF()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      Generate PDF
+    </button>
+  </div>
+
+</div>
+
+<script>
+  // Set today's date as default
+  document.getElementById('f-date').valueAsDate = new Date();
+
+  function previewPDF() {
+    // Mock preview
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:9999;';
+    overlay.innerHTML = `
+      <div style="background:#fff;border-radius:16px;padding:40px;text-align:center;max-width:360px;box-shadow:0 20px 60px rgba(0,0,0,.3)">
+        <div style="font-size:48px;margin-bottom:16px">📄</div>
+        <div style="font-family:'Noto Serif Thai',sans-serif;font-size:16px;font-weight:700;color:#1B3A6B;margin-bottom:8px">Preview PDF</div>
+        <div style="font-size:13px;color:#94A3B8;margin-bottom:24px;line-height:1.6">ใบขวาง — คำขอ #GCL-2025-00142<br>นายสมศักดิ์ ใจดี</div>
+        <button onclick="this.closest('div[style]').remove()" style="padding:10px 24px;border-radius:10px;background:#1B3A6B;color:#fff;border:none;font-size:14px;font-weight:700;cursor:pointer;font-family:'Sarabun',sans-serif">ปิด Preview</button>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+    overlay.addEventListener('click', e => { if(e.target === overlay) overlay.remove(); });
+  }
+
+  function generatePDF() {
+    const btn = event.currentTarget;
+    const origText = btn.innerHTML;
+    btn.innerHTML = '⏳ กำลังสร้าง PDF...';
+    btn.disabled = true;
+    setTimeout(() => {
+      btn.innerHTML = origText;
+      btn.disabled = false;
+      const overlay = document.createElement('div');
+      overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:9999;';
+      overlay.innerHTML = `
+        <div style="background:#fff;border-radius:16px;padding:40px;text-align:center;max-width:360px;box-shadow:0 20px 60px rgba(0,0,0,.3)">
+          <div style="width:64px;height:64px;border-radius:50%;background:#DCFCE7;display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 16px;color:#16A34A">✓</div>
+          <div style="font-family:'Noto Serif Thai',sans-serif;font-size:16px;font-weight:700;color:#1B3A6B;margin-bottom:8px">สร้างใบขวางสำเร็จ</div>
+          <div style="font-size:13px;color:#94A3B8;margin-bottom:24px;line-height:1.6">ไฟล์ถูกบันทึกและแนบกับคำขอ<br>#GCL-2025-00142 แล้ว</div>
+          <a href="officer-decision-approve.html" style="display:inline-flex;align-items:center;gap:6px;padding:10px 24px;border-radius:10px;background:#1B3A6B;color:#fff;text-decoration:none;font-size:14px;font-weight:700;font-family:'Sarabun',sans-serif">กลับหน้าผลการตัดสิน</a>
+        </div>
+      `;
+      document.body.appendChild(overlay);
+      overlay.addEventListener('click', e => { if(e.target === overlay) overlay.remove(); });
+    }, 1500);
+  }
+</script>
+</body>
+</html>

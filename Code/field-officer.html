@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>เจ้าหน้าที่ภาคสนาม — ระบบน้ำบาดาล GCL</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Thai:wght@400;500;600;700;800&family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1B3A6B;--navy-dark:#0F2447;--navy-mid:#2C5AA0;--navy-lt:#E8EEF7;--navy-xlt:#F4F7FC;
+  --gold:#B8860B;--gold-bright:#D4A017;--gold-lt:#FBF4E0;
+  --teal:#0A5C47;--teal-mid:#0F7A5E;--teal-lt:#E2F4EE;
+  --ok:#166534;--ok-lt:#DCFCE7;--ok-mid:#16A34A;
+  --warn:#92400E;--warn-lt:#FEF3C7;--warn-mid:#D97706;
+  --err:#991B1B;--err-lt:#FEE2E2;--err-mid:#DC2626;
+  --surface:#F0F2F7;--border:rgba(27,58,107,0.10);--border-mid:rgba(27,58,107,0.18);
+  --text:#0F172A;--text-2:#374151;--text-3:#94A3B8;--white:#fff;
+  --shadow-sm:0 1px 3px rgba(15,20,40,.06),0 1px 2px rgba(15,20,40,.04);
+  --shadow-md:0 4px 16px rgba(15,36,71,.08),0 1px 4px rgba(15,36,71,.04);
+  --shadow-lg:0 12px 40px rgba(15,36,71,.13),0 4px 12px rgba(15,36,71,.06);
+  --radius:12px;--radius-lg:18px;--radius-xl:24px;
+}
+html,body{font-family:'Sarabun',sans-serif;background:var(--surface);color:var(--text);height:100%;overflow:hidden}
+h1,h2,h3{font-family:'Noto Serif Thai','Sarabun',sans-serif}
+.app-wrap{display:flex;height:100vh}
+
+/* Sidebar */
+.sidebar{width:240px;background:linear-gradient(180deg,var(--warn) 0%,#7A3408 100%);display:flex;flex-direction:column;padding:24px 0;flex-shrink:0}
+.sidebar-brand{padding:0 20px 24px;border-bottom:1px solid rgba(255,255,255,.15)}
+.sidebar-brand-title{font-family:'Noto Serif Thai',sans-serif;font-size:15px;font-weight:700;color:#fff;line-height:1.4}
+.sidebar-brand-sub{font-size:11px;color:rgba(255,255,255,.5);margin-top:4px}
+.sidebar-nav{padding:16px 12px;flex:1}
+.field-nav{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;font-size:13px;font-weight:600;color:rgba(255,255,255,.7);text-decoration:none;transition:all .2s;margin-bottom:4px}
+.field-nav:hover,.field-nav.active{background:rgba(255,255,255,.15);color:#fff}
+.sidebar-user{padding:16px 20px;border-top:1px solid rgba(255,255,255,.15)}
+.sidebar-user-name{font-size:13px;font-weight:600;color:#fff}
+.sidebar-user-sub{font-size:11px;color:rgba(255,255,255,.5)}
+
+/* Main */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.main-content{flex:1;overflow-y:auto;padding:32px 40px}
+
+/* Buttons */
+.btn{padding:10px 20px;border-radius:10px;border:none;font-size:14px;font-weight:700;cursor:pointer;font-family:'Sarabun',sans-serif;transition:all .2s;display:inline-flex;align-items:center;gap:6px;text-decoration:none}
+.btn-primary{background:var(--navy);color:#fff}
+.btn-primary:hover{background:var(--navy-mid)}
+.btn-outline{background:transparent;color:var(--navy);border:1.5px solid var(--navy)}
+.btn-outline:hover{background:var(--navy-lt)}
+.btn-sm{padding:6px 14px;font-size:12px;border-radius:7px}
+
+/* Job cards */
+.job-card{background:#fff;border-radius:14px;border:1px solid var(--border);padding:20px 24px;cursor:pointer;transition:all .2s}
+.job-card:hover{box-shadow:var(--shadow-md);transform:translateY(-1px);border-color:var(--border-mid)}
+
+/* Status badges */
+.status-badge{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700}
+.status-pending{background:var(--warn-lt);color:var(--warn)}
+.status-done{background:var(--ok-lt);color:var(--ok)}
+
+/* Tab filters */
+.filter-tab{padding:6px 16px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--border-mid);background:#fff;font-family:'Sarabun',sans-serif;color:var(--text-2);transition:all .2s}
+.filter-tab.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.filter-tab:hover:not(.active){background:var(--navy-xlt);border-color:var(--navy)}
+</style>
+</head>
+<body>
+<div class="app-wrap">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-brand-title">กรมทรัพยากรน้ำบาดาล</div>
+      <div class="sidebar-brand-sub">เจ้าหน้าที่ภาคสนาม</div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="admin.html" class="field-nav active">🏠 งานที่ได้รับมอบหมาย</a>
+    </nav>
+    <div class="sidebar-user">
+      <div class="sidebar-user-name">นายสมชาย ภาคสนาม</div>
+      <div class="sidebar-user-sub">เจ้าหน้าที่ภาคสนาม เขต 5</div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="main">
+    <div class="main-content">
+
+      <!-- Header -->
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px">
+        <div>
+          <h1 style="font-family:'Noto Serif Thai',sans-serif;font-size:22px;font-weight:700;color:var(--navy)">งานที่ได้รับมอบหมาย</h1>
+          <p style="font-size:13px;color:var(--text-3);margin-top:4px">รายการคำขอที่ต้องลงพื้นที่ตรวจสอบ</p>
+        </div>
+        <!-- Filter tabs -->
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="filter-tab active" onclick="filterJobs('all', this)">ทั้งหมด (5)</button>
+          <button class="filter-tab" onclick="filterJobs('pending', this)">รอลงพื้นที่ (3)</button>
+          <button class="filter-tab" onclick="filterJobs('done', this)">ตรวจแล้ว (2)</button>
+        </div>
+      </div>
+
+      <!-- Job cards -->
+      <div style="display:flex;flex-direction:column;gap:12px" id="job-list">
+
+        <!-- Card 1: รอลงพื้นที่ -->
+        <div class="job-card" data-status="pending" onclick="window.location.href='field-inspect.html'">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between">
+            <div style="flex:1">
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+                <span class="status-badge status-pending">รอลงพื้นที่</span>
+                <span style="font-size:12px;color:var(--text-3)">คำขอ #GCL-2025-00142</span>
+              </div>
+              <div style="font-size:15px;font-weight:700;color:var(--navy);margin-bottom:4px">นายสมศักดิ์ ใจดี</div>
+              <div style="font-size:13px;color:var(--text-2)">เจาะน้ำบาดาลใหม่ — บ้านเลขที่ 12 ถ.พหลโยธิน อ.เมือง จ.เชียงใหม่</div>
+            </div>
+            <div style="text-align:right;flex-shrink:0;margin-left:20px">
+              <div style="font-size:12px;color:var(--text-3)">กำหนดตรวจ</div>
+              <div style="font-size:14px;font-weight:700;color:var(--warn)">08 พ.ค. 2568</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2: รอลงพื้นที่ -->
+        <div class="job-card" data-status="pending" onclick="window.location.href='field-inspect.html'">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between">
+            <div style="flex:1">
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+                <span class="status-badge status-pending">รอลงพื้นที่</span>
+                <span style="font-size:12px;color:var(--text-3)">คำขอ #GCL-2025-00145</span>
+              </div>
+              <div style="font-size:15px;font-weight:700;color:var(--navy);margin-bottom:4px">ห้างหุ้นส่วน อุดม เกษตรกรรม</div>
+              <div style="font-size:13px;color:var(--text-2)">ต่ออายุใบอนุญาต — 88/2 หมู่ 3 ต.สันทราย อ.สารภี จ.เชียงใหม่</div>
+            </div>
+            <div style="text-align:right;flex-shrink:0;margin-left:20px">
+              <div style="font-size:12px;color:var(--text-3)">กำหนดตรวจ</div>
+              <div style="font-size:14px;font-weight:700;color:var(--warn)">10 พ.ค. 2568</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 3: รอลงพื้นที่ -->
+        <div class="job-card" data-status="pending" onclick="window.location.href='field-inspect.html'">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between">
+            <div style="flex:1">
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+                <span class="status-badge status-pending">รอลงพื้นที่</span>
+                <span style="font-size:12px;color:var(--text-3)">คำขอ #GCL-2025-00148</span>
+              </div>
+              <div style="font-size:15px;font-weight:700;color:var(--navy);margin-bottom:4px">โรงเรียนวัดสันกำแพง</div>
+              <div style="font-size:13px;color:var(--text-2)">ขอใบอนุญาตใหม่ — 45 ถ.สันกำแพง ต.สันกำแพง อ.สันกำแพง จ.เชียงใหม่</div>
+            </div>
+            <div style="text-align:right;flex-shrink:0;margin-left:20px">
+              <div style="font-size:12px;color:var(--text-3)">กำหนดตรวจ</div>
+              <div style="font-size:14px;font-weight:700;color:var(--warn)">12 พ.ค. 2568</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 4: ตรวจแล้ว -->
+        <div class="job-card" data-status="done" style="opacity:.75" onclick="window.location.href='field-result.html'">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between">
+            <div style="flex:1">
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+                <span class="status-badge status-done">ตรวจแล้ว ✓</span>
+                <span style="font-size:12px;color:var(--text-3)">คำขอ #GCL-2025-00138</span>
+              </div>
+              <div style="font-size:15px;font-weight:700;color:var(--navy);margin-bottom:4px">บริษัท น้ำไทย จำกัด</div>
+              <div style="font-size:13px;color:var(--text-2)">ต่ออายุใบอนุญาต — นิคมอุตสาหกรรมภาคเหนือ จ.ลำพูน</div>
+            </div>
+            <div style="text-align:right;flex-shrink:0;margin-left:20px">
+              <div style="font-size:12px;color:var(--text-3)">ส่งผลเมื่อ</div>
+              <div style="font-size:14px;font-weight:700;color:var(--ok)">05 พ.ค. 2568</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 5: ตรวจแล้ว -->
+        <div class="job-card" data-status="done" style="opacity:.75" onclick="window.location.href='field-result.html'">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between">
+            <div style="flex:1">
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+                <span class="status-badge status-done">ตรวจแล้ว ✓</span>
+                <span style="font-size:12px;color:var(--text-3)">คำขอ #GCL-2025-00131</span>
+              </div>
+              <div style="font-size:15px;font-weight:700;color:var(--navy);margin-bottom:4px">นางสาวมาลัย สุขใจ</div>
+              <div style="font-size:13px;color:var(--text-2)">เจาะน้ำบาดาลใหม่ — 201 ต.แม่ริม อ.แม่ริม จ.เชียงใหม่</div>
+            </div>
+            <div style="text-align:right;flex-shrink:0;margin-left:20px">
+              <div style="font-size:12px;color:var(--text-3)">ส่งผลเมื่อ</div>
+              <div style="font-size:14px;font-weight:700;color:var(--ok)">03 พ.ค. 2568</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  function filterJobs(status, btn) {
+    // Update tab styles
+    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    // Filter cards
+    document.querySelectorAll('#job-list .job-card').forEach(card => {
+      if (status === 'all' || card.dataset.status === status) {
+        card.style.display = '';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  }
+</script>
+</body>
+</html>
